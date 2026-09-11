@@ -1,0 +1,219 @@
+version: "3.8"
+
+services:
+  # DATABASE LAYER
+  mongodb:
+    image: mongo:latest
+    container_name: salon-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - salon-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: salon-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    depends_on:
+      - mongodb
+    networks:
+      - salon-network
+
+  volume-explorer:
+    image: filebrowser/filebrowser:latest
+    container_name: salon-volume-explorer
+    restart: unless-stopped
+    ports:
+      - "8082:80" # Maps the interface to Port 8082
+    volumes:
+      # Map all your project volumes as subdirectories inside the explorer
+      - mongo-data:/srv/mongodb_files
+      - redis-data:/srv/redis_files
+      - rabbitmq-data:/srv/rabbitmq_files
+    networks:
+      - salon-network
+
+  # REDIS LAYER
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: salon-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - salon-network
+    restart: always
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: salon-redis-commander
+    restart: unless-stopped
+    environment:
+      # FIX: Tells the UI to connect to the 'redis' container service on its default port
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8083:8081" # Maps the interface to Port 8083
+    networks:
+      - salon-network
+    depends_on:
+      - redis
+
+  # RABBITMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: salon-rabbitmq
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - salon-network
+    restart: always
+
+  # CORE SERVICES
+  api-gateway:
+    container_name: salon-api-gateway
+    build:
+      context: .
+      dockerfile: ./apps/api-gateway/Dockerfile
+    ports:
+      - "5000:5000" # Standard entry point port for clients
+    env_file:
+      - ./apps/api-gateway/.env
+    depends_on:
+      - redis
+      - mongodb
+      - rabbitmq
+      - auth-service
+      - salon-service
+      - booking-service
+      - payment-service
+      - notification-service
+    networks:
+      - salon-network
+    restart: always
+
+  auth-service:
+    container_name: salon-auth-service
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./apps/auth-service/.env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - salon-network
+    restart: always
+
+  booking-service:
+    container_name: salon-booking-service
+    build:
+      context: .
+      dockerfile: ./apps/booking-service/Dockerfile
+    ports:
+      - "5003:5003"
+    environment:
+      - TZ=Asia/Kolkata
+    env_file:
+      - ./apps/booking-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - salon-network
+    restart: always
+
+  salon-service:
+    container_name: salon-service
+    build:
+      context: .
+      dockerfile: ./apps/salon-service/Dockerfile
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./apps/salon-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - salon-network
+    restart: always
+
+  payment-service:
+    container_name: salon-payment-service
+    build:
+      context: .
+      dockerfile: ./apps/payment-service/Dockerfile
+    ports:
+      - "5004:5004"
+    env_file:
+      - ./apps/payment-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - salon-network
+    restart: always
+
+  notification-service:
+    container_name: salon-notification-service
+    build:
+      context: .
+      dockerfile: ./apps/notification-service/Dockerfile
+    env_file:
+      - ./apps/notification-service/.env
+    networks:
+      - salon-network
+    restart: always
+
+# -------------------------------------------------------------
+# INFRASTRUCTURE NETWORKS & VOLUMES
+# -------------------------------------------------------------
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+
+networks:
+  salon-network:
+    driver: bridge

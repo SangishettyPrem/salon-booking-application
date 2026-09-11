@@ -1,0 +1,35 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "Notification Service for the Salon Booking System.",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "amqplib": "^2.0.1",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "morgan": "^1.12.0",
+    "nodemailer": "^9.1.1",
+    "winston": "^3.19.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.8",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/nodemailer": "^8.0.1",
+    "tsc-alias": "^1.9.2",
+    "tsx": "^4.23.13",
+    "typescript": "^5.7.2"
+  }
+}

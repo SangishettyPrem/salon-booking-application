@@ -1,0 +1,26 @@
+{
+  "name": "salon-booking-application-backend",
+  "version": "1.0.0",
+  "description": "Backend for the Salon Booking Application.",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:salon\" \"npm run dev:booking\" \"npm run dev:payment\" \"npm run dev:notification\"",
+    "dev:gateway": "npm --prefix apps/api-gateway run dev",
+    "dev:auth": "npm --prefix apps/auth-service run dev",
+    "dev:salon": "npm --prefix apps/salon-service run dev",
+    "dev:booking": "npm --prefix apps/booking-service run dev",
+    "dev:payment": "npm --prefix apps/payment-service run dev",
+    "dev:notification": "npm --prefix apps/notification-service run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0"
+  }
+}

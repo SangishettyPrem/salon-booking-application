@@ -1,0 +1,26 @@
+# RSA-Keys
+keys/
+
+# Dependencies
+node_modules/
+apps/*/node_modules/
+dist/
+apps/*/dist/
+.env
+.env.*
+apps/*/.env
+apps/*/.env.*
+!.env.example
+!apps/*/.env.example
+
+# Logs
+logs/
+*.log
+
+# Coverage
+coverage/
+.turbo/
+.cache/
+.DS_Store
+Thumbs.db
+
