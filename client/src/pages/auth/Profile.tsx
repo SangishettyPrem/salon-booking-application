@@ -160,7 +160,7 @@ const Profile: React.FC = () => {
                   {user.name.slice(0, 1)}
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-(--ink)">
+                  <h2 className="text-lg font-bold text-(--ink) truncate max-w-42">
                     {user.name}
                   </h2>
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-(--muted) capitalize">
@@ -552,7 +552,8 @@ const Profile: React.FC = () => {
               Delete Account
             </h3>
             <p className="text-xs text-(--muted) max-w-xl">
-              Permanently delete your profile, appointments, and all associated personal data. This action is irreversible.
+              Permanently delete your profile, appointments, and all associated
+              personal data. This action is irreversible.
             </p>
           </div>
         </div>
