@@ -61,12 +61,12 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/auth_db?retryWrites=true&w=majority
-      - key: REDIS_URL                      # FIX: Added required 'key' identifier
+      - key: REDIS_URL
         fromService:
           type: redis
           name: salon-redis
           property: connectionString
-      - key: RABBITMQ_HOST                  # FIX: Relocated 'key' token cleanly above its fromService block
+      - key: RABBITMQ_HOST
         fromService:
           type: pserv
           name: rabbitmq-service
@@ -84,7 +84,7 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/salon_db?retryWrites=true&w=majority
-      - key: RABBITMQ_HOST                  # FIX: Added missing explicit environment 'key' block
+      - key: RABBITMQ_HOST
         fromService:
           type: pserv
           name: rabbitmq-service
@@ -102,7 +102,7 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/payment_db?retryWrites=true&w=majority
-      - key: RABBITMQ_HOST                  # FIX: Added missing explicit environment 'key' block
+      - key: RABBITMQ_HOST
         fromService:
           type: pserv
           name: rabbitmq-service
@@ -120,13 +120,7 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/booking_db?retryWrites=true&w=majority
-      - fromService:
-          type: pserv
-          name: rabbitmq-service
-          property: host
-        asVariable: RABBITMQ_HOST            # FIX: Swapped syntax structure back to standardized key format
-        # NOTE: Replacing the line above with clean mapping layout below ensures parsing conformity:
-      - key: RABBITMQ_HOST
+      - key: RABBITMQ_HOST  # FIX: Restructured into clean key/fromService block map
         fromService:
           type: pserv
           name: rabbitmq-service
@@ -144,7 +138,7 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/notification_db?retryWrites=true&w=majority
-      - key: RABBITMQ_HOST                  # FIX: Restructured with explicit key element
+      - key: RABBITMQ_HOST
         fromService:
           type: pserv
           name: rabbitmq-service
