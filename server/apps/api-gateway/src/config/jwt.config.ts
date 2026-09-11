@@ -1,14 +1,12 @@
-import fs from "node:fs";
-import path from "node:path";
 import { env } from "@/config/env.config.js";
 
+const publicKey = env.jwt.jwtPublicKey
+  ? env.jwt.jwtPublicKey.replace(/\\n/g, "\n")
+  : null;
+
 export const jwtConfig = {
-  publicKey: fs.readFileSync(
-    path.resolve(process.cwd(), env.jwt.accessPublicKeyPath),
-    "utf8",
-  ),
+  publicKey: publicKey,
   algorithm: "RS256" as const,
   issuer: env.jwt.issuer,
   audience: env.jwt.audience,
 };
-

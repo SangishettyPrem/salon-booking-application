@@ -12,7 +12,7 @@ const envSchema = z.object({
   NOTIFICATION_SERVICE_URL: z.url(),
 
   // JWT Config
-  JWT_ACCESS_PUBLIC_KEY_PATH: z.string(),
+  JWT_PUBLIC_KEY: z.string(),
   JWT_ISSUER: z.string(),
   JWT_AUDIENCE: z.string(),
 });
@@ -35,7 +35,7 @@ export const env = {
   },
   redisURL: parsed.data.REDIS_URL,
   jwt: {
-    accessPublicKeyPath: parsed.data.JWT_ACCESS_PUBLIC_KEY_PATH,
+    jwtPublicKey: parsed.data.JWT_PUBLIC_KEY,
     issuer: parsed.data.JWT_ISSUER,
     audience: parsed.data.JWT_AUDIENCE,
   },

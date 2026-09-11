@@ -36,14 +36,10 @@ export const generateRefreshToken = (payload: {
       type: payload.type,
     },
     jwtConfig.privateKey,
-
     {
       algorithm: "RS256",
-
       expiresIn: "7d",
-
       issuer: jwtConfig.issuer,
-
       audience: jwtConfig.audience,
     },
   );

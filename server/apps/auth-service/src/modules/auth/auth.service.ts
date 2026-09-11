@@ -86,7 +86,7 @@ export const register = async (data: CreateUserData) => {
       status: UserStatus.ACTIVE,
       emailVerified: true,
     });
-    
+
     await OTPModel.deleteMany({ email: formattedEmail });
 
     return user;
@@ -308,8 +308,13 @@ export const session = async (refreshToken: string) => {
 
   let payload: RefreshTokenPayload;
   try {
-    payload = (await verifyRefreshToken(refreshToken)) as RefreshTokenPayload;
+    payload = verifyRefreshToken(refreshToken) as RefreshTokenPayload;
   } catch (error: any) {
+    console.error(
+      "JWT Verification failed details:",
+      error.message,
+      error.stack,
+    );
     if (error.name === "TokenExpiredError") {
       await revokeRefreshToken(refreshToken);
       throw new AppError("Refresh token expired.", 401, "SESSION_EXPIRED");

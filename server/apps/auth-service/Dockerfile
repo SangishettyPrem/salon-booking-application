@@ -1,8 +1,5 @@
 FROM node:20-alpine AS builder
 
-WORKDIR /usr/src/server/keys
-COPY ./keys ./
-
 WORKDIR /usr/src/server
 
 COPY tsconfig.base.json ./
@@ -18,9 +15,6 @@ COPY apps/auth-service/src ./src
 RUN npm run build
 
 FROM node:20-alpine AS production
-
-WORKDIR /usr/src/server/keys
-COPY --from=builder /usr/src/server/keys ./
 
 WORKDIR /usr/src/server/apps/auth-service
 

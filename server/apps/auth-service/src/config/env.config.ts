@@ -10,8 +10,8 @@ const envSchema = z.object({
   RABBITMQ_URL: z.url(),
 
   // JWT Config
-  JWT_ACCESS_PRIVATE_KEY_PATH: z.string().min(1),
-  JWT_ACCESS_PUBLIC_KEY_PATH: z.string().min(1),
+  JWT_PRIVATE_KEY: z.string().min(1),
+  JWT_PUBLIC_KEY: z.string().min(1),
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   JWT_ISSUER: z.string().default("salon-booking-auth"),
   JWT_AUDIENCE: z.string(),
@@ -46,8 +46,8 @@ export const env = {
   rabbitMQ: parsed.data.RABBITMQ_URL,
 
   jwt: {
-    accessPrivateKeyPath: parsed.data.JWT_ACCESS_PRIVATE_KEY_PATH,
-    accessPublicKeyPath: parsed.data.JWT_ACCESS_PUBLIC_KEY_PATH,
+    jwtPrivateKey: parsed.data.JWT_PRIVATE_KEY,
+    jwtPublicKey: parsed.data.JWT_PUBLIC_KEY,
     accessExpiresIn: parsed.data.JWT_ACCESS_EXPIRES_IN,
     issuer: parsed.data.JWT_ISSUER,
     audience: parsed.data.JWT_AUDIENCE,
