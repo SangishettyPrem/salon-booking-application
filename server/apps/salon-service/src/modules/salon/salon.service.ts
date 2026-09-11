@@ -144,6 +144,8 @@ export const createSalon = async (
       isVerified: true,
       businessHours: DEFAULT_BUSINESS_HOURS,
     } as unknown as ISalon);
+
+    await redis.del("salons:*");
     return salon;
   } catch (error) {
     throw error;
@@ -155,7 +157,6 @@ export const updateSalon = async (
   data: UpdateSalonRequest,
 ) => {
   try {
-    console.log("data: ", data);
     const existingSalon = await SalonModel.findById(salonId);
     if (!existingSalon) {
       throw new AppError("Salon profile not found", 404);
@@ -204,7 +205,7 @@ export const updateSalon = async (
     }
     const cachedKey = `salon:${updatedSalon._id}`;
     const cachedSalonByUser = `salon:user:${existingSalon.ownerId}`;
-    await redis.del(cachedKey, cachedSalonByUser);
+    await redis.del(cachedKey, cachedSalonByUser, "salons:*");
 
     return updatedSalon;
   } catch (error) {
@@ -239,6 +240,7 @@ export const deleteSalon = async (salonId: string) => {
       cacheServicesKey,
       cacheStaffKey,
       cachedSalonByUser,
+      "salons:*",
     );
 
     return true;
