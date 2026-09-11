@@ -11,7 +11,7 @@ const envSchema = z.object({
   SMTP_USER: z.string().email(),
   SMTP_PASSWORD: z.string().min(1),
   MAIL_FROM: z.string().min(1),
-
+  RESEND_API_KEY: z.string().min(1),
   PASSWORD_RESET_EXPIRES_MINUTES: z.coerce.number().default(15),
 });
 
@@ -24,6 +24,9 @@ if (!parsed.success) {
 
 export const env = {
   appURL: parsed.data.APP_URL,
+  resend: {
+    apiKey: parsed.data.RESEND_API_KEY,
+  },
   rabbitmq: {
     url: parsed.data.RABBITMQ_URL,
   },

@@ -19,7 +19,7 @@ export const logger = winston.createLogger({
     winston.format.splat(),
     winston.format.json(),
   ),
-  defaultMeta: { service: "Auth Service" },
+  defaultMeta: { service: "Notification Service" },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(

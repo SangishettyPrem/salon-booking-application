@@ -19,7 +19,7 @@ export const logger = winston.createLogger({
     winston.format.splat(),
     winston.format.json(),
   ),
-  defaultMeta: { service: "api-gateway" },
+  defaultMeta: { service: "API Gateway" },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(

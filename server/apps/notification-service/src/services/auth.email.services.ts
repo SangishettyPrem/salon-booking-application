@@ -1,11 +1,11 @@
 import { env } from "@/config/env.config.js";
-import { emailTransporter } from "@/utils/email.transporter.js";
 import {
   buildPasswordResetEmail,
   buildPasswordResetEmailSuccess,
   buildSendOTPEmail,
 } from "@/templates/auth.email.templates.js";
 import { logger } from "@/utils/logger.js";
+import { Resend } from "resend";
 
 interface PasswordResetEmailData {
   email: string;
@@ -18,30 +18,46 @@ interface SendOTPEmailData {
   otp: string;
 }
 
+const resend = new Resend(env.resend.apiKey);
+
 export const sendPasswordResetEmail = async (
   payload: PasswordResetEmailData,
 ): Promise<void> => {
   const emailContent = buildPasswordResetEmail(payload);
 
-  await emailTransporter.sendMail({
+  const { data, error } = await resend.emails.send({
     from: env.smtp.mailFrom,
-    to: payload.email,
+    to: [payload.email],
     subject: emailContent.subject,
-    text: emailContent.text,
     html: emailContent.html,
+    text: emailContent.text,
   });
+
+  if (error) {
+    logger.error("Failed to send password reset email: ", error);
+    throw error;
+  }
+
+  logger.info("Password reset email sent successfully");
 };
 
 export const sendPasswordResetSuccessEmail = async (email: string) => {
   try {
     const emailContent = buildPasswordResetEmailSuccess();
-    await emailTransporter.sendMail({
+    const { data, error } = await resend.emails.send({
       from: env.smtp.mailFrom,
-      to: email,
+      to: [email],
       subject: emailContent.subject,
-      text: emailContent.text,
       html: emailContent.html,
+      text: emailContent.text,
     });
+
+    if (error) {
+      logger.error("Failed to send password reset success email: ", error);
+      throw error;
+    }
+
+    logger.info("Password reset success email sent successfully");
   } catch (error) {
     logger.error("Failed to send password reset success email:", error);
   }
@@ -50,13 +66,18 @@ export const sendPasswordResetSuccessEmail = async (email: string) => {
 export const sendOTP = async (payload: SendOTPEmailData) => {
   try {
     const emailContent = buildSendOTPEmail(payload.otp);
-    await emailTransporter.sendMail({
+    const { data, error } = await resend.emails.send({
       from: env.smtp.mailFrom,
-      to: payload.email,
+      to: [payload.email],
       subject: emailContent.subject,
-      text: emailContent.text,
       html: emailContent.html,
+      text: emailContent.text,
     });
+    if (error) {
+      logger.error("Failed to send OTP email: ", error);
+      throw error;
+    }
+    logger.info("OTP Email Send Successfully...");
   } catch (error) {
     logger.error("Failed to send OTP email: ", error);
   }
