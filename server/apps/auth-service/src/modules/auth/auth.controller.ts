@@ -148,7 +148,7 @@ export const logout = async (req: Request, res: Response) => {
   if (refreshToken) {
     await authService.logout(refreshToken);
   }
-  res.clearCookie("rt");
+  res.clearCookie("rt", refreshCookieOptions);
   return res.status(200).json({
     message: "Logout Success",
     success: true,

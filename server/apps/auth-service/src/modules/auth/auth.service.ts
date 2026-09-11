@@ -319,10 +319,12 @@ export const session = async (refreshToken: string) => {
       await revokeRefreshToken(refreshToken);
       throw new AppError("Refresh token expired.", 401, "SESSION_EXPIRED");
     }
+    await revokeRefreshToken(refreshToken);
     throw new AppError("Invalid refresh token.", 401, "INVALID_SESSION");
   }
 
   if (payload.type !== "refresh") {
+    await revokeRefreshToken(refreshToken);
     throw new AppError("Invalid session token.", 401, "INVALID_SESSION");
   }
 
