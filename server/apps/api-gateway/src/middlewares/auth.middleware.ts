@@ -2,7 +2,7 @@ import { jwtConfig } from "@/config/jwt.config.js";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface AccessTokenPayload {
+interface AccessTokenPayload extends jwt.JwtPayload {
   sub: string;
   role: string;
   type: "access";
@@ -12,11 +12,13 @@ interface AccessTokenPayload {
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        _id: string;
-        role: string;
-        email?: string | undefined;
-      } | undefined;
+      user?:
+        | {
+            _id: string;
+            role: string;
+            email?: string | undefined;
+          }
+        | undefined;
     }
   }
 }
@@ -42,7 +44,7 @@ export const attachUser = (
         algorithms: ["RS256"],
         issuer: jwtConfig.issuer,
         audience: jwtConfig.audience,
-      }) as AccessTokenPayload;
+      }) as unknown as AccessTokenPayload;
 
       if (payload && (payload.type === "access" || payload.sub)) {
         req.user = {
@@ -84,7 +86,7 @@ export const authenticate = (
       algorithms: ["RS256"],
       issuer: jwtConfig.issuer,
       audience: jwtConfig.audience,
-    }) as AccessTokenPayload;
+    }) as unknown as AccessTokenPayload;
 
     if (payload.type !== "access" && !payload.sub) {
       return res.status(401).json({

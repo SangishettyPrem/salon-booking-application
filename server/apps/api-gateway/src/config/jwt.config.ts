@@ -1,9 +1,6 @@
 import { env } from "@/config/env.config.js";
 
-const publicKey = env.jwt.jwtPublicKey
-  ? env.jwt.jwtPublicKey.replace(/\\n/g, "\n")
-  : null;
-
+const publicKey = env.jwt.jwtPublicKey.replace(/\\n/g, "\n");
 export const jwtConfig = {
   publicKey: publicKey,
   algorithm: "RS256" as const,
