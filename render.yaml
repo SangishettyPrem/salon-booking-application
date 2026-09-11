@@ -23,8 +23,7 @@ services:
   # -------------------------------------------------------------
   - type: redis
     name: salon-redis
-    plan: free
-    ipAllowList: []
+    plan: free # FIX: Stripped out raw `ipAllowList: []` to let default secure internal policies apply
 
   # -------------------------------------------------------------
   # 3. MICROSERVICES (Backend Web Services)
@@ -120,7 +119,7 @@ services:
       - fromGroup: salon-database-secrets
       - key: MONGO_URI
         value: ${MONGO_ATLAS_BASE_URL}/booking_db?retryWrites=true&w=majority
-      - key: RABBITMQ_HOST  # FIX: Restructured into clean key/fromService block map
+      - key: RABBITMQ_HOST
         fromService:
           type: pserv
           name: rabbitmq-service
