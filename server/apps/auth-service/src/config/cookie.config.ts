@@ -8,8 +8,8 @@ const refreshTokenMaxAge = ms(
 
 export const refreshCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: env.nodeEnv === "production" ? true : false,
-  sameSite: env.tokenSecret.cookieSameSite as "lax" | "strict" | "none",
+  secure: env.nodeEnv == "production" ? true : env.tokenSecret.cookieSecure,
+  sameSite: "none",
   maxAge: refreshTokenMaxAge,
   path: "/",
 };
