@@ -5,7 +5,7 @@ services:
   - type: pserv
     name: rabbitmq-service
     env: docker
-    dockerImage: rabbitmq:3-management
+    image: rabbitmq:3-management
     plan: starter # Private services with disks require a paid plan on Render
     disk:
       name: rabbitmq-data
@@ -23,7 +23,7 @@ services:
   - type: web
     name: api-gateway
     env: docker
-    rootDir: server/api-gateway
+    rootDir: server/apps/api-gateway
     plan: free
     numInstances: 1
     envVars:
@@ -43,7 +43,7 @@ services:
   - type: web
     name: auth-service
     env: docker
-    rootDir: server/auth-service
+    rootDir: server/apps/auth-service
     plan: free
     numInstances: 1
     envVars:
@@ -65,7 +65,7 @@ services:
   - type: web
     name: salon-service
     env: docker
-    rootDir: server/salon-service
+    rootDir: server/apps/salon-service
     plan: free
     numInstances: 1
     envVars:
@@ -83,7 +83,7 @@ services:
   - type: web
     name: payment-service
     env: docker
-    rootDir: server/payment-service
+    rootDir: server/apps/payment-service
     plan: free
     numInstances: 1
     envVars:
@@ -101,7 +101,7 @@ services:
   - type: web
     name: booking-service
     env: docker
-    rootDir: server/booking-service
+    rootDir: server/apps/booking-service
     plan: free
     numInstances: 1
     envVars:
@@ -119,7 +119,7 @@ services:
   - type: web
     name: notification-service
     env: docker
-    rootDir: server/notification-service
+    rootDir: server/apps/notification-service
     plan: free
     numInstances: 1
     envVars:
@@ -137,7 +137,7 @@ services:
 # -------------------------------------------------------------
 # 3. REDIS INSTANCE
 # -------------------------------------------------------------
-keyvalues:
+redisInstances:
   - name: salon-redis
     plan: free
 
