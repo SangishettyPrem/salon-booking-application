@@ -5,7 +5,8 @@ services:
   - type: pserv
     name: rabbitmq-service
     env: docker
-    image: rabbitmq:3-management
+    image:
+      url: docker.io/library/rabbitmq:3-management
     plan: starter # Private services with disks require a paid plan on Render
     disk:
       name: rabbitmq-data
@@ -137,7 +138,7 @@ services:
 # -------------------------------------------------------------
 # 3. REDIS INSTANCE
 # -------------------------------------------------------------
-redisInstances:
+redis:
   - name: salon-redis
     plan: free
 
