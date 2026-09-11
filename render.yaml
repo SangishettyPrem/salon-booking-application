@@ -19,11 +19,14 @@ services:
         generateValue: true
 
   # -------------------------------------------------------------
-  # 2. REDIS DATABASE
+  # 2. REDIS DATABASE (services[1])
   # -------------------------------------------------------------
   - type: redis
     name: salon-redis
-    plan: free # FIX: Stripped out raw `ipAllowList: []` to let default secure internal policies apply
+    plan: free
+    ipAllowList: # FIX: Explicitly declared the block map as required by Render
+      - source: 0.0.0.0/0
+        description: internal and dynamic external access
 
   # -------------------------------------------------------------
   # 3. MICROSERVICES (Backend Web Services)
