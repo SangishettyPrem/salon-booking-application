@@ -15,7 +15,6 @@ import { rateLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
-
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
@@ -25,19 +24,13 @@ app.use(cookieParser());
 
 app.use(rateLimiter);
 
-// Global attachUser to extract JWT headers / cookies if present and forward downstream
 app.use(attachUser);
 
-app.get("/", (_req, res) => {
+app.get("/health", (_req, res) => {
   res.status(200).json({
     success: true,
-    message: "GlowBook Salon Booking API Gateway",
-    services: {
-      auth: env.services.authServiceURL,
-      salon: env.services.salonServiceURL,
-      bookings: env.services.bookingServiceURL,
-      payments: env.services.paymentServiceURL,
-    },
+    message: "GlowBook Salon Booking API Gateway is healthy",
+    timestamp: new Date().toISOString(),
   });
 });
 
