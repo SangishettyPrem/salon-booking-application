@@ -19,6 +19,25 @@ import redis from "@/config/redis.js";
 
 // ==================== SALON METHODS ====================
 
+export const deleteKeysByPattern = async (pattern: string): Promise<void> => {
+  let cursor = "0";
+  do {
+    // Scan matching keys in chunks of 100 to keep performance fast
+    const [newCursor, keys] = await redis.scan(
+      cursor,
+      "MATCH",
+      pattern,
+      "COUNT",
+      100,
+    );
+    cursor = newCursor;
+
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  } while (cursor !== "0");
+};
+
 export const getAllSalons = async (query: getAllSalonQuery) => {
   try {
     const page = Math.max(1, Number(query.page) || 1);
@@ -145,7 +164,8 @@ export const createSalon = async (
       businessHours: DEFAULT_BUSINESS_HOURS,
     } as unknown as ISalon);
 
-    await redis.del("salons:*");
+    await deleteKeysByPattern("salons:*");
+
     return salon;
   } catch (error) {
     throw error;
@@ -205,7 +225,8 @@ export const updateSalon = async (
     }
     const cachedKey = `salon:${updatedSalon._id}`;
     const cachedSalonByUser = `salon:user:${existingSalon.ownerId}`;
-    await redis.del(cachedKey, cachedSalonByUser, "salons:*");
+    await redis.del(cachedKey, cachedSalonByUser);
+    await deleteKeysByPattern("salons:*");
 
     return updatedSalon;
   } catch (error) {
@@ -240,8 +261,8 @@ export const deleteSalon = async (salonId: string) => {
       cacheServicesKey,
       cacheStaffKey,
       cachedSalonByUser,
-      "salons:*",
     );
+    await deleteKeysByPattern("salons:*");
 
     return true;
   } catch (error) {
