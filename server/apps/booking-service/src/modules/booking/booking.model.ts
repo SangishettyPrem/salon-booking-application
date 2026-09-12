@@ -18,6 +18,7 @@ export interface IBooking extends Document {
   bookingCode: string;
   salonId: Types.ObjectId;
   salonName: string;
+  salonEmail: string;
   salonAddress?: string;
   salonPhone?: string;
   customerId: Types.ObjectId;
@@ -57,6 +58,12 @@ const BookingSchema: Schema<IBooking> = new Schema<IBooking>(
       ref: "Salon",
       required: [true, "Salon ID is required"],
       index: true,
+    },
+    salonEmail: {
+      type: String,
+      required: [true, "Salon email is required"],
+      trim: true,
+      lowercase: true,
     },
     salonName: {
       type: String,

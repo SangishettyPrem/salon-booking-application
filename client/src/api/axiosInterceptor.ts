@@ -47,7 +47,11 @@ api.interceptors.response.use(
     if (error.code === "ERR_NETWORK" || !error.response) {
       store.dispatch(setServerDown(true));
       return Promise.reject(error);
-    } else if (status == 401 && backendError?.code === "SESSION_EXPIRED") {
+    } else if (
+      status == 401 &&
+      (backendError?.code === "SESSION_EXPIRED" ||
+        backendError?.code == "INVALID_SESSION")
+    ) {
       store.dispatch(setSessionExpired(true));
       return Promise.reject(error);
     }

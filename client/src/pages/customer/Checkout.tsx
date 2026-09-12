@@ -109,10 +109,11 @@ const Checkout = () => {
     }
 
     setIsProcessing(true);
-
+    console.log("checkoutdata: ", checkoutData);
     const newBookingRecord: CreateBookingRequest = {
       salonId: checkoutData.salon.id as string,
       salonName: checkoutData.salon.name as string,
+      salonEmail: checkoutData.salon.email as string,
       salonAddress: checkoutData.salon.address as string,
       salonPhone: checkoutData.salon.phone as string,
       customerId: user._id,
@@ -132,6 +133,7 @@ const Checkout = () => {
 
     // If Pay at Salon chosen
     if (paymentMethod === "at_salon") {
+      console.log("newbookingrecord: ", newBookingRecord);
       const booking = await saveBooking(newBookingRecord);
       if (!booking) {
         setIsProcessing(false);

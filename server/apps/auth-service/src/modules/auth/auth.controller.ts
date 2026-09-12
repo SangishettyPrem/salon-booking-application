@@ -78,6 +78,7 @@ export const forgotPassword = async (
   res: Response,
 ) => {
   await authService.forgotPassword(req.body.email);
+  console.log("hello world");
   return res.status(200).json({
     success: true,
     message:

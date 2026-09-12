@@ -201,9 +201,10 @@ export const forgotPassword = async (email: string): Promise<void> => {
   try {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await UserModel.findOne({ email: normalizedEmail }).exec();
-    if (!user) return;
+    if (!user) throw new AppError("User not found", 404);
 
-    if (user.status !== UserStatus.ACTIVE) return;
+    if (user.status !== UserStatus.ACTIVE)
+      throw new AppError("User not active", 400);
 
     await PasswordResetTokenModel.updateMany(
       {
@@ -222,7 +223,6 @@ export const forgotPassword = async (email: string): Promise<void> => {
     const expiresAt = new Date(
       Date.now() + env.passwordResetExpiresMinutes * 60 * 1000,
     ); // expires in 15 minutes
-
     await PasswordResetTokenModel.create({
       userId: user._id,
       tokenHash: hashToken,

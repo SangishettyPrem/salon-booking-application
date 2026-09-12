@@ -146,6 +146,7 @@ const BookingWizard: React.FC = () => {
           name: salon.name,
           address: `${salon.addressLine1}, ${salon.city}`,
           phone: salon.phone,
+          email: salon.email,
         },
         services: selectedServices,
         stylist:

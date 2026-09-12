@@ -9,6 +9,7 @@ export interface CreateBookingRequest {
   salonName: string;
   salonAddress: string;
   salonPhone: string;
+  salonEmail: string;
   customerId: string;
   customerName: string;
   customerPhone: string;

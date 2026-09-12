@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, ArrowRight, ShieldAlert } from "lucide-react";
+import { LogOut, ShieldAlert } from "lucide-react";
 import { logout } from "@/redux/features/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux.hooks";
 
@@ -62,9 +62,8 @@ const SessionExpired: React.FC = () => {
             onClick={handleClose}
             className="w-full py-3 px-5 rounded-xl bg-(--rose) hover:opacity-90 text-white text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-(--rose)/50"
           >
-            <LogOut size={16} />
             <span>Login Again</span>
-            <ArrowRight size={16} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>

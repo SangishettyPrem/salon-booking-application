@@ -9,6 +9,9 @@ const serviceItemSchema = z.object({
 export const createBookingSchema = z.object({
   salonId: z.string({ error: "Salon ID is required" }).min(1),
   salonName: z.string({ error: "Salon name is required" }).min(1),
+  salonEmail: z
+    .string({ error: "Salon email is required" })
+    .email("Invalid email address"),
   salonAddress: z.string().optional().default(""),
   salonPhone: z.string().optional().default(""),
   customerId: z.string().optional(),

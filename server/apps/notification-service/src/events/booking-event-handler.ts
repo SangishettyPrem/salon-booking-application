@@ -2,6 +2,7 @@ import {
   sendBookingCancelledEmail,
   sendBookingCompletedEmail,
   sendBookingConfirmedEmail,
+  sendBookingCreatedEmailForCustomer,
 } from "@/services/booking.email.services.js";
 
 export const handleBookingEvent = async (routingKey: string, payload: any) => {
@@ -15,6 +16,9 @@ export const handleBookingEvent = async (routingKey: string, payload: any) => {
       break;
     case "booking.completed":
       await sendBookingCompletedEmail(payload);
+      break;
+    case "booking.created":
+      await sendBookingCreatedEmailForCustomer(payload);
       break;
     default:
       console.log("Unknown Event");

@@ -96,10 +96,33 @@ export const createBooking = async (
       bookingCode,
       customerId: new Types.ObjectId(customerId),
       salonId: new Types.ObjectId(data.salonId),
+      salonEmail: data.salonEmail,
       status: bookingStatus,
       paymentStatus: isPaid ? "Paid" : "Pending",
       paymentMethod: data.paymentMethod || "Pay at Salon",
     });
+
+    if (data.paymentMethod === "Pay at Salon") {
+      publishBookingEvent(`booking.created`, {
+        bookingCode: booking.bookingCode,
+        paymentStatus: booking.paymentStatus,
+        status: booking.status,
+        salonId: booking.salonId,
+        staffName: booking.staffName,
+        date: booking.date,
+        time: booking.time,
+        paymentMethod: booking.paymentMethod,
+        price: booking.price,
+        serviceName: booking.serviceName,
+        salonName: booking.salonName,
+        salonEmail: booking.salonEmail,
+        salonAddress: booking.salonAddress,
+        salonPhone: booking.salonPhone,
+        customerName: booking.customerName,
+        customerPhone: booking.customerPhone,
+        customerEmail: booking.customerEmail,
+      });
+    }
 
     return booking;
   } catch (error) {
@@ -313,6 +336,26 @@ export const updatePaymentStatus = async (
     booking.razorpayPaymentId = razorpayPaymentId;
 
     await booking.save();
+
+    publishBookingEvent(`booking.created`, {
+      bookingCode: booking.bookingCode,
+      paymentStatus: booking.paymentStatus,
+      status: booking.status,
+      salonId: booking.salonId,
+      staffName: booking.staffName,
+      date: booking.date,
+      time: booking.time,
+      paymentMethod: booking.paymentMethod,
+      price: booking.price,
+      serviceName: booking.serviceName,
+      salonName: booking.salonName,
+      salonEmail: booking.salonEmail,
+      salonAddress: booking.salonAddress,
+      salonPhone: booking.salonPhone,
+      customerName: booking.customerName,
+      customerPhone: booking.customerPhone,
+      customerEmail: booking.customerEmail,
+    });
     return booking;
   } catch (error) {
     throw error;

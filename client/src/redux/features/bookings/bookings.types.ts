@@ -58,6 +58,7 @@ export interface Booking {
 export interface CreateBookingRequest {
   salonId: string;
   salonName: string;
+  salonEmail: string;
   salonAddress: string;
   salonPhone: string;
   customerId: string;

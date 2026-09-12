@@ -24,10 +24,10 @@ export const sendPasswordResetEmail = async (
   payload: PasswordResetEmailData,
 ): Promise<void> => {
   const emailContent = buildPasswordResetEmail(payload);
-
+  console.log("emailcontent: ", emailContent);
   const { data, error } = await resend.emails.send({
     from: env.smtp.mailFrom,
-    to: [payload.email],
+    to: payload.email,
     subject: emailContent.subject,
     html: emailContent.html,
     text: emailContent.text,
@@ -46,7 +46,7 @@ export const sendPasswordResetSuccessEmail = async (email: string) => {
     const emailContent = buildPasswordResetEmailSuccess();
     const { data, error } = await resend.emails.send({
       from: env.smtp.mailFrom,
-      to: [email],
+      to: email,
       subject: emailContent.subject,
       html: emailContent.html,
       text: emailContent.text,
@@ -68,7 +68,7 @@ export const sendOTP = async (payload: SendOTPEmailData) => {
     const emailContent = buildSendOTPEmail(payload.otp);
     const { data, error } = await resend.emails.send({
       from: env.smtp.mailFrom,
-      to: [payload.email],
+      to: payload.email,
       subject: emailContent.subject,
       html: emailContent.html,
       text: emailContent.text,
