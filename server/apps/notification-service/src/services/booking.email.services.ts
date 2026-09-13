@@ -8,6 +8,7 @@ import {
   type BookingCreatedPayloadForCustomer_SalonOwner,
   type BookingEmailPayload,
 } from "@/templates/booking.email.templates.js";
+import { emailTransporter } from "@/utils/email.transporter.js";
 import { logger } from "@/utils/logger.js";
 import { Resend } from "resend";
 
@@ -18,18 +19,20 @@ export const sendBookingConfirmedEmail = async (
 ) => {
   const emailContent = buildBookingConfirmedEmail(payload);
 
-  const { data, error } = await resend.emails.send({
-    from: env.smtp.mailFrom,
-    to: payload.email,
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-  });
-  if (error) {
-    logger.error("Failed to send booking confirmed email: ", error);
-    throw error;
-  }
-  logger.info("Booking confirmed email sent successfully");
+  emailTransporter
+    .sendMail({
+      from: env.smtp.mailFrom,
+      to: payload.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    })
+    .then(() => {
+      logger.info("Booking confirmed email sent successfully");
+    })
+    .catch((error) => {
+      logger.error("Failed to send booking confirmed email: ", error);
+    });
 };
 
 export const sendBookingCancelledEmail = async (
@@ -37,18 +40,20 @@ export const sendBookingCancelledEmail = async (
 ) => {
   const emailContent = buildBookingCancelledEmail(payload);
 
-  const { data, error } = await resend.emails.send({
-    from: env.smtp.mailFrom,
-    to: payload.email,
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-  });
-  if (error) {
-    logger.error("Failed to send booking cancelled email: ", error);
-    throw error;
-  }
-  logger.info("Booking Cancelled email sent successfully");
+  emailTransporter
+    .sendMail({
+      from: env.smtp.mailFrom,
+      to: payload.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    })
+    .then(() => {
+      logger.info("Booking cancelled email sent successfully");
+    })
+    .catch((error) => {
+      logger.error("Failed to send booking cancelled email: ", error);
+    });
 };
 
 export const sendBookingCompletedEmail = async (
@@ -56,18 +61,20 @@ export const sendBookingCompletedEmail = async (
 ) => {
   const emailContent = buildBookingCompletedEmail(payload);
 
-  const { data, error } = await resend.emails.send({
-    from: env.smtp.mailFrom,
-    to: payload.email,
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-  });
-  if (error) {
-    logger.error("Failed to send booking completed email: ", error);
-    throw error;
-  }
-  logger.info("Booking completed email sent successfully");
+  emailTransporter
+    .sendMail({
+      from: env.smtp.mailFrom,
+      to: payload.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    })
+    .then(() => {
+      logger.info("Booking completed email sent successfully");
+    })
+    .catch((error) => {
+      logger.error("Failed to send booking completed email: ", error);
+    });
 };
 
 export const sendBookingCreatedEmailForCustomer = async (
@@ -86,21 +93,20 @@ export const sendBookingCreatedEmailForCustomer = async (
   };
   const emailContent = buildBookingCreatedEmailForCustomer(customerPayload);
 
-  const { data, error: customerError } = await resend.emails.send({
-    from: env.smtp.mailFrom,
-    to: payload.customerEmail,
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-  });
-  if (customerError) {
-    logger.error(
-      "Failed to send booking created email to customer: ",
-      customerError,
-    );
-    throw customerError;
-  }
-  logger.info("Booking created email sent successfully to customer");
+  emailTransporter
+    .sendMail({
+      from: env.smtp.mailFrom,
+      to: payload.customerEmail,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    })
+    .then(() => {
+      logger.info("Booking created email sent successfully to customer");
+    })
+    .catch((error) => {
+      logger.error("Failed to send booking created email to customer: ", error);
+    });
 
   const salonPayload = {
     customerName: payload.customerName,
@@ -113,19 +119,24 @@ export const sendBookingCreatedEmailForCustomer = async (
   const emailContentSalonOwner =
     buildBookingCreatedEmailForSalonOwner(salonPayload);
 
-  const { data: salonData, error: salonError } = await resend.emails.send({
-    from: env.smtp.mailFrom,
-    to: payload.salonEmail,
-    subject: emailContentSalonOwner.subject,
-    html: emailContentSalonOwner.html,
-    text: emailContentSalonOwner.text,
-  });
-  if (salonError) {
-    logger.error(
-      "Failed to send booking created email to salon owner: ",
-      salonError,
-    );
-    throw salonError;
-  }
-  logger.info("Booking created email sent successfully to salon owner");
+  emailTransporter
+    .sendMail({
+      from: env.smtp.mailFrom,
+      to: payload.salonEmail,
+      subject: emailContentSalonOwner.subject,
+      html: emailContentSalonOwner.html,
+      text: emailContentSalonOwner.text,
+    })
+    .then(() => {
+      logger.info("Booking created email sent successfully to salon owner");
+    })
+    .then(() => {
+      logger.info("Booking created email sent successfully to salon owner");
+    })
+    .catch((error) => {
+      logger.error(
+        "Failed to send booking created email to salon owner: ",
+        error,
+      );
+    });
 };
