@@ -9,10 +9,6 @@ import {
   Lock,
   User,
   Phone,
-  CheckCircle2,
-  AlertCircle,
-  RotateCw,
-  ShieldCheck,
 } from "lucide-react";
 import { useFormik } from "formik";
 import {
@@ -58,26 +54,6 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Email verification state for registration
-  const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
-  const [showOtpInput, setShowOtpInput] = useState<boolean>(false);
-  const [otp, setOtp] = useState<string>("");
-  const [isSendingOtp, setIsSendingOtp] = useState<boolean>(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
-  const [otpTimer, setOtpTimer] = useState<number>(0);
-  const [otpError, setOtpError] = useState<string>("");
-
-  // OTP Countdown Timer
-  useEffect(() => {
-    let interval: any;
-    if (otpTimer > 0) {
-      interval = setInterval(() => {
-        setOtpTimer((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [otpTimer]);
-
   // If already authenticated and verified, redirect to destination
   useEffect(() => {
     if (!isInitializing && isAuthenticated && user && user.emailVerified) {
@@ -107,65 +83,6 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
     onSubmit: async (values) => await handleRegister(values),
   });
 
-  // Send OTP for Register
-  const handleSendRegisterOtp = async () => {
-    const email = registerFormik.values.email.trim();
-    if (!email) {
-      return handleError("Please enter your email address first.");
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return handleError("Please enter a valid email address.");
-    }
-
-    try {
-      setIsSendingOtp(true);
-      setOtpError("");
-      const result = await dispatch(authSlice.SendOTP({ email })).unwrap();
-      if (result.success) {
-        setShowOtpInput(true);
-        setOtpTimer(30);
-        handleSuccess("Verification code sent to your email.");
-      } else {
-        setOtpError(result.message ?? "Failed to send code.");
-        handleError(result.message ?? "Failed to send code.");
-      }
-    } catch (error: any) {
-      setOtpError(error ?? "Failed to send code.");
-      handleError(error ?? "Failed to send code.");
-    } finally {
-      setIsSendingOtp(false);
-    }
-  };
-
-  // Verify OTP for Register
-  const handleVerifyRegisterOtp = async () => {
-    const email = registerFormik.values.email.trim();
-    if (!otp.trim() || otp.trim().length < 4) {
-      setOtpError("Please enter a valid 6-digit code.");
-      return;
-    }
-
-    try {
-      setIsVerifyingOtp(true);
-      setOtpError("");
-      const result = await dispatch(
-        authSlice.VerifyOTP({ email, otp: otp.trim() }),
-      ).unwrap();
-      if (result.success) {
-        setIsEmailVerified(true);
-        setShowOtpInput(false);
-        handleSuccess("Email verified successfully!");
-      } else {
-        setOtpError(result.message ?? "Invalid verification code.");
-      }
-    } catch (error: any) {
-      setOtpError(error ?? "Invalid verification code.");
-    } finally {
-      setIsVerifyingOtp(false);
-    }
-  };
-
   const handleLogin = async (values: LoginState) => {
     try {
       setSubmitting(true);
@@ -194,12 +111,6 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
   };
 
   const handleRegister = async (values: RegisterState) => {
-    if (!isEmailVerified) {
-      return handleError(
-        "Please verify your email address before creating an account.",
-      );
-    }
-
     try {
       setSubmitting(true);
       const result = await dispatch(authSlice.Register(values)).unwrap();
@@ -233,11 +144,6 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
     if (Object.keys(errors).length > 0) {
       const firstError = Object.values(errors)[0];
       return handleError(firstError);
-    }
-    if (!isEmailVerified) {
-      return handleError(
-        "Please verify your email address before creating an account.",
-      );
     }
     await registerFormik.submitForm();
   };
@@ -398,98 +304,13 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
                     type="email"
                     placeholder="you@example.com"
                     value={registerFormik.values.email}
-                    onChange={(e) => {
-                      registerFormik.handleChange(e);
-                      if (isEmailVerified) setIsEmailVerified(false);
-                      if (showOtpInput) setShowOtpInput(false);
-                    }}
+                    onChange={registerFormik.handleChange}
                     onBlur={registerFormik.handleBlur}
                     error={registerFormik.errors.email}
                     touched={registerFormik.touched.email}
                     required
-                    readOnly={isEmailVerified}
                     startAdornment={<Mail size={16} />}
-                    endAdornment={
-                      isEmailVerified ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                          <CheckCircle2 size={13} />
-                          <span>Verified</span>
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleSendRegisterOtp}
-                          disabled={
-                            isSendingOtp ||
-                            !registerFormik.values.email ||
-                            Boolean(registerFormik.errors.email)
-                          }
-                          className="text-[11px] font-bold text-(--rose) hover:text-(--rose-dark) bg-(--soft) hover:bg-(--line)/50 disabled:opacity-50 px-2.5 py-1 rounded-lg border border-(--line) transition cursor-pointer shrink-0"
-                        >
-                          {isSendingOtp ? "Sending..." : "Verify Email"}
-                        </button>
-                      )
-                    }
                   />
-
-                  {/* Inline OTP Verification Panel */}
-                  {!isEmailVerified && showOtpInput && (
-                    <div className="p-4 rounded-2xl bg-(--soft) border border-(--line) space-y-3 animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-bold text-(--ink) flex items-center gap-1.5">
-                          <ShieldCheck size={14} className="text-(--rose)" />
-                          Enter 6-Digit Code
-                        </span>
-                        {otpTimer > 0 ? (
-                          <span className="text-[11px] text-(--muted)">
-                            Resend in {otpTimer}s
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={handleSendRegisterOtp}
-                            disabled={isSendingOtp}
-                            className="text-[11px] font-bold text-(--rose) hover:underline inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <RotateCw
-                              size={11}
-                              className={isSendingOtp ? "animate-spin" : ""}
-                            />
-                            <span>Resend Code</span>
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          maxLength={6}
-                          value={otp}
-                          onChange={(e) => {
-                            setOtpError("");
-                            setOtp(e.target.value.replace(/\D/g, ""));
-                          }}
-                          placeholder="123456"
-                          className="w-full text-center tracking-[0.3em] font-mono text-base font-bold py-2 px-3 rounded-xl border border-(--line) bg-(--surface) text-(--ink) outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleVerifyRegisterOtp}
-                          disabled={isVerifyingOtp || otp.length < 4}
-                          className="px-4 py-2 rounded-xl bg-(--rose) hover:opacity-90 disabled:opacity-50 text-white text-xs font-bold transition shrink-0 cursor-pointer"
-                        >
-                          {isVerifyingOtp ? "Checking..." : "Confirm"}
-                        </button>
-                      </div>
-
-                      {otpError && (
-                        <p className="text-[11px] text-rose-600 flex items-center gap-1">
-                          <AlertCircle size={12} />
-                          <span>{otpError}</span>
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Password */}
@@ -533,7 +354,7 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
 
             <button
               type="submit"
-              disabled={submitting || (!isLogin && !isEmailVerified)}
+              disabled={submitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-(--rose) bg-(--rose) px-4.5 py-3.25 text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-55 shadow-xs cursor-pointer"
             >
               {submitting

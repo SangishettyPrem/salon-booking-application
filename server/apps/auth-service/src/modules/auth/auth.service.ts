@@ -50,24 +50,6 @@ export const register = async (data: CreateUserData) => {
 
     const formattedEmail = email.trim().toLowerCase();
 
-    const verifiedOtpRecord = await OTPModel.findOne({
-      email: formattedEmail,
-      isVerified: true,
-    });
-
-    if (!verifiedOtpRecord)
-      throw new AppError(
-        "Email not verified or OTP expired. Please request OTP again.",
-        400,
-      );
-
-    if (!verifiedOtpRecord) {
-      throw new AppError(
-        "Please verify your email address before creating an account",
-        400,
-      );
-    }
-
     const existingEmail = await UserModel.findOne({ email });
     if (existingEmail) {
       throw new AppError("Email already exists", 400);
